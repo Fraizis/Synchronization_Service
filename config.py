@@ -2,14 +2,13 @@ import os
 
 from dotenv import load_dotenv, find_dotenv
 
-directory = os.path.abspath(os.getcwd())
-files = os.listdir(directory)
 
 if not find_dotenv():
     exit("Переменные окружения не загружены т.к отсутствует файл .env")
 else:
     load_dotenv()
-    TOKEN = os.getenv("TOKEN")
-    SELF_PATH = os.getenv("SELF_PATH")
-    CLOUD_DIR_NAME = os.getenv("CLOUD_DIR_NAME")
+    HEADERS = {'Content-Type': 'application/json', 'Authorization': f'OAuth {os.getenv("TOKEN")}'}
+    REQUEST_URL = os.getenv("REQUEST_URL")
+    SELF_DIR = os.getenv("SELF_DIR")
+    CLOUD_DIR = os.getenv("CLOUD_DIR")
     SYNC_TIME = os.getenv("SYNC_TIME")
