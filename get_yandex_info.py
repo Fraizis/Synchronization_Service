@@ -52,11 +52,11 @@ def delete_file(file, cloud_dir):
 
 def upload_file(file, cloud_dir, replace=True):
     res = requests.get(f'{URL}/upload?path={cloud_dir}%2f{file}&overwrite={replace}', headers=HEADERS).json()
-    with open(file, 'rb') as f:
-        try:
+    try:
+        with open(file, 'rb') as f:
             requests.put(res['href'], files={'file': f})
-        except KeyError:
-            print(res)
+    except Exception as exc:
+        print(exc, type(exc))
 
 
 def select_files_to_upload(self_files, cloud_files):
@@ -89,9 +89,9 @@ print(files_to_delete_from_cloud)
 select_files_to_upload(self_files, cloud_files)
 
 #create_folder('test/123')
-#delete_file('123456', CLOUD_DIR)
+delete_file('logic.py', CLOUD_DIR)
 
-#upload_file('logic.py', CLOUD_DIR)
+#upload_file('log1234ic.py', CLOUD_DIR)
 
 self_files = get_self_folder_files(directory)
 cloud_files = get_cloud_files(CLOUD_DIR)
