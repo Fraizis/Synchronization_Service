@@ -10,10 +10,11 @@ def get_self_folder_files(self_dir: str) -> Dict[str, str]:
 
     for file in os.listdir(self_dir):
         if os.path.isfile(os.path.join(self_dir, file)):
-            time_sec = os.path.getmtime(os.path.join(self_dir, file))
-            get_change_time = datetime.fromtimestamp(
-                time_sec).strftime("%Y-%m-%d %H:%M:%S")
-            self_dir_files[file] = get_change_time
+            # time_sec = os.path.getmtime(os.path.join(self_dir, file))
+            # get_change_time = datetime.fromtimestamp(
+            #     time_sec).strftime("%Y-%m-%d %H:%M:%S")
+
+            self_dir_files[file] = calculate_file_hash(f'{self_dir}/{file}')
 
     return self_dir_files
 
@@ -26,15 +27,17 @@ def get_files_from_cloud(
 
     result = requests.get(f'{request_url}?path={cloud_dir}', headers=headers)
     dir_files = result.json()['_embedded']['items']
+    #print(dir_files)
     cloud_files = {}
     for i in dir_files:
-        new_time = datetime.strptime(
-            i['created'][:-6], "%Y-%m-%dT%H:%M:%S"
-        ) + timedelta(hours=3)
-
-        cloud_files[i['name']] = datetime.strftime(
-            new_time, "%Y-%m-%d %H:%M:%S"
-        )
+        cloud_files[i['name']] = i['sha256']
+        # new_time = datetime.strptime(
+        #     i['created'][:-6], "%Y-%m-%dT%H:%M:%S"
+        # ) + timedelta(hours=3)
+        #
+        # cloud_files[i['name']] = datetime.strftime(
+        #     new_time, "%Y-%m-%d %H:%M:%S"
+        # )
 
     return cloud_files
 
@@ -83,7 +86,9 @@ def select_files_to_upload(
 
     for file in self_files:
         if file in cloud_files:
-            if cloud_files[file] < self_files[file]:
+            if cloud_files[file] != self_files[file]:
+                print(cloud_files[file])
+                print(self_files[file])
                 files_to_upload.append(file)
         else:
             files_to_upload.append(file)
