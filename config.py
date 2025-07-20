@@ -11,4 +11,4 @@ else:
     REQUEST_URL = os.getenv("REQUEST_URL")
     SELF_DIR = os.getenv("SELF_DIR")
     CLOUD_DIR = os.getenv("CLOUD_DIR")
-    SYNC_TIME = os.getenv("SYNC_TIME")
+    SYNC_TIMEOUT = int(os.getenv("SYNC_TIMEOUT"))
