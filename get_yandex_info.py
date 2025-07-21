@@ -1,3 +1,5 @@
+"""Модуль с классом для синхронизации"""
+
 import time
 from loguru import logger
 
@@ -29,17 +31,32 @@ class SyncYaCloud:
         }
 
     def create_cloud_dir(self):
+        """
+        Создать папку в "облаке"
+        """
         create_folder(**self.get_data)
 
     def get_self_files(self):
+        """
+        Получить локальные файлы
+        :return: Dict{str, str}
+        """
         self_dir_files = get_self_folder_files(self.self_dir)
         return self_dir_files
 
     def get_cloud_files(self):
+        """
+        Получить файлы в облаке
+        :return: Dict{str, str}
+        """
         cloud_files = get_files_from_cloud(**self.get_data)
         return cloud_files
 
     def get_files_to_upload(self):
+        """
+        Получить список файлов для загрузки
+        :return: List[str]
+        """
         files_to_upload = select_files_to_upload(
             self.get_self_files(),
             self.get_cloud_files()
@@ -52,6 +69,10 @@ class SyncYaCloud:
         return files_to_upload
 
     def get_files_to_delete(self):
+        """
+        Получить список файлов для удаления
+        :return: set{str
+        """
         files_to_delete = select_files_to_delete(
             self.get_self_files(),
             self.get_cloud_files()

@@ -1,3 +1,5 @@
+"""Модуль для запуска приложения"""
+
 from get_yandex_info import SyncYaCloud
 
 if __name__ == '__main__':
