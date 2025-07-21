@@ -12,7 +12,7 @@ logger.add("log_info.log")
 
 class SyncYaCloud:
     """
-    Класс с методами для синхронизации файлов с Яндекс диском
+    Класс с методами для синхронизации файлов локального пути с Яндекс диском
     """
     def __init__(
             self,
@@ -71,7 +71,7 @@ class SyncYaCloud:
     def get_files_to_delete(self):
         """
         Получить список файлов для удаления
-        :return: set{str
+        :return: set{str}
         """
         files_to_delete = select_files_to_delete(
             self.get_self_files(),
@@ -85,12 +85,23 @@ class SyncYaCloud:
         return files_to_delete
 
     def upload_file(self, file):
+        """
+        Загрузить файл
+        :param file: имя файла
+        """
         upload_file_to_cloud(file, self.self_dir, **self.get_data)
 
     def delete_file(self, file):
+        """
+        Удалить файл
+        :param file: имя файла
+        """
         delete_file_from_cloud(file, **self.get_data)
 
     def run_app(self):
+        """
+        Запуск приложения
+        """
         logger.info('Starting synchronization')
         self.create_cloud_dir()
         [self.upload_file(i) for i in self.get_files_to_upload()]
