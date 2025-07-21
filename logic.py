@@ -146,6 +146,14 @@ def select_files_to_delete(
     files_to_delete = cloud_files.keys() - self_files.keys()
     return files_to_delete
 
+
+def check_path(path: str) -> bool:
+    """
+    Функция для проверки указанного пути
+    :return: bool
+    """
+    return os.path.exists(path)
+
 # def calculate_file_hash(filepath):
 #     hash_object = hashlib.sha256()
 #     with open(filepath, 'rb') as file:

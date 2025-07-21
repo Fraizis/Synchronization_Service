@@ -5,7 +5,7 @@ from loguru import logger
 
 from config import REQUEST_URL, HEADERS, CLOUD_DIR, SELF_DIR, SYNC_TIMEOUT
 from logic import get_self_folder_files, get_files_from_cloud, create_folder, upload_file_to_cloud, \
-    delete_file_from_cloud, select_files_to_upload, select_files_to_delete
+    delete_file_from_cloud, select_files_to_upload, select_files_to_delete, check_path
 
 logger.add("log_info.log")
 
@@ -102,6 +102,10 @@ class SyncYaCloud:
         """
         Запуск приложения
         """
+        if not check_path(self.self_dir):
+            logger.debug(f'{self.self_dir} такого пути не существует. Проверьте правильность пути')
+            exit(404)
+
         logger.info('Starting synchronization')
         self.create_cloud_dir()
         [self.upload_file(i) for i in self.get_files_to_upload()]

@@ -3,9 +3,13 @@
 import os
 
 from dotenv import load_dotenv, find_dotenv
+from loguru import logger
+
+logger.add("log_info.log")
 
 if not find_dotenv():
-    exit("Переменные окружения не загружены т.к отсутствует файл .env")
+    logger.debug('Переменные окружения не загружены т.к отсутствует файл .env')
+    exit()
 else:
     load_dotenv()
     HEADERS = {'Content-Type': 'application/json', 'Authorization': f'OAuth {os.getenv("TOKEN")}'}
