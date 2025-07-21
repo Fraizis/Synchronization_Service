@@ -1,16 +1,6 @@
-import os
-from datetime import datetime
+from get_yandex_info import SyncYaCloud
 
-directory = os.path.abspath(os.getcwd())
-files = os.listdir(directory)
-
-print(directory)
-
-
-for i in files:
-    time_sec = os.path.getmtime(os.path.join(directory, i))
-    get_change_time = datetime.fromtimestamp(time_sec)
-    print(i)
-    print(get_change_time)
-
-print(files)
+if __name__ == '__main__':
+    sync_run = SyncYaCloud()
+    while True:
+        sync_run.run_app()

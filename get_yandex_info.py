@@ -1,11 +1,17 @@
 import time
+from loguru import logger
 
 from config import REQUEST_URL, HEADERS, CLOUD_DIR, SELF_DIR, SYNC_TIMEOUT
 from logic import get_self_folder_files, get_files_from_cloud, create_folder, upload_file_to_cloud, \
     delete_file_from_cloud, select_files_to_upload, select_files_to_delete
 
+logger.add("log_info.log")
+
 
 class SyncYaCloud:
+    """
+    Класс с методами для синхронизации файлов с Яндекс диском
+    """
     def __init__(
             self,
             url=REQUEST_URL,
@@ -39,9 +45,9 @@ class SyncYaCloud:
             self.get_cloud_files()
         )
         if not files_to_upload:
-            print('Nothing to upload')
+            logger.info('Nothing to upload')
         else:
-            print('files_to_upload:', files_to_upload)
+            logger.info(f'Detect local change: {files_to_upload}')
 
         return files_to_upload
 
@@ -51,9 +57,9 @@ class SyncYaCloud:
             self.get_cloud_files()
         )
         if not files_to_delete:
-            print('Nothing to delete')
+            logger.info('Nothing to delete from cloud')
         else:
-            print('files_to_delete:', files_to_delete)
+            logger.info(f'Files to delete from cloud: {files_to_delete}')
 
         return files_to_delete
 
@@ -64,24 +70,12 @@ class SyncYaCloud:
         delete_file_from_cloud(file, **self.get_data)
 
     def run_app(self):
+        logger.info('Starting synchronization')
         self.create_cloud_dir()
-        print('self_dir_files:', self.get_self_files())
-        print('cloud_files:', self.get_cloud_files())
         [self.upload_file(i) for i in self.get_files_to_upload()]
         [self.delete_file(i) for i in self.get_files_to_delete()]
-        print('self_dir_files:', self.get_self_files())
-        print('cloud_files:', self.get_cloud_files())
-        print('Synchronization complete')
+        logger.info(f'Local files: {sorted([item for item in self.get_self_files().keys()])}')
+        logger.info(f'Cloud files: {[item for item in self.get_cloud_files().keys()]}')
+        logger.info('Synchronization complete')
+        logger.info(f'Next synchronization in {self.sync_timeout} sec')
         time.sleep(self.sync_timeout)
-
-
-sync_run = SyncYaCloud()
-
-# print(sync_run.get_self_files())
-# print(sync_run.get_cloud_files())
-
-while True:
-    sync_run.run_app()
-
-# print(sync_run.get_self_files())
-# print(sync_run.get_cloud_files())
