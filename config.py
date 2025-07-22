@@ -8,7 +8,7 @@ from loguru import logger
 logger.add("log_info.log")
 
 if not find_dotenv():
-    logger.debug('Переменные окружения не загружены т.к отсутствует файл .env')
+    logger.error('Переменные окружения не загружены т.к отсутствует файл .env')
     exit()
 else:
     load_dotenv()
@@ -16,4 +16,4 @@ else:
     REQUEST_URL = os.getenv("REQUEST_URL")
     SELF_DIR = os.getenv("SELF_DIR")
     CLOUD_DIR = os.getenv("CLOUD_DIR")
-    SYNC_TIMEOUT = int(os.getenv("SYNC_TIMEOUT"))
+    SYNC_TIMEOUT = os.getenv("SYNC_TIMEOUT")

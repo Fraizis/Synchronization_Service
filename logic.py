@@ -1,10 +1,10 @@
 """Модуль с функциями для сервиса синхронизации"""
 
-import hashlib
 import os
 from datetime import datetime, timedelta
 from typing import Dict, List
 import requests
+from config import logger
 
 
 def get_self_folder_files(self_dir: str) -> Dict[str, str]:
@@ -20,7 +20,6 @@ def get_self_folder_files(self_dir: str) -> Dict[str, str]:
             get_change_time = datetime.fromtimestamp(
                 time_sec).strftime("%Y-%m-%d %H:%M:%S")
             self_dir_files[file] = get_change_time
-            # self_dir_files[file] = calculate_file_hash(f'{self_dir}/{file}')
 
     return self_dir_files
 
@@ -41,7 +40,6 @@ def get_files_from_cloud(
     dir_files = result.json()['_embedded']['items']
     cloud_files = {}
     for i in dir_files:
-        # cloud_files[i['name']] = i['sha256']
         new_time = datetime.strptime(
             i['created'][:-6], "%Y-%m-%dT%H:%M:%S"
         ) + timedelta(hours=3)
@@ -103,7 +101,7 @@ def upload_file_to_cloud(
     :return: словарь {'имя файла': 'дата изменения'}
     """
     res = requests.get(
-        f'{request_url}/upload?path={cloud_dir}/{file}&overwrite={replace}',
+        f'{request_url}/upload?path={cloud_dir}%2F{file}&overwrite={replace}',
         headers=headers
     ).json()
     try:
@@ -147,16 +145,52 @@ def select_files_to_delete(
     return files_to_delete
 
 
-def check_path(path: str) -> bool:
+def check_path(path: str) -> None:
     """
     Функция для проверки указанного пути
-    :return: bool
     """
-    return os.path.exists(path)
+    if not os.path.exists(path):
+        logger.error(f'"{path}" такого пути не существует. Проверьте правильность пути')
+        return False
+    return True
+        #exit()
 
-# def calculate_file_hash(filepath):
-#     hash_object = hashlib.sha256()
-#     with open(filepath, 'rb') as file:
-#         while chunk := file.read(8192):
-#             hash_object.update(chunk)
-#     return hash_object.hexdigest()
+
+def check_cloud_dir(dir: str) -> None:
+    """
+    Функция для проверки имени папки в удалённом хранилище
+    """
+    if not dir:
+        logger.error(f'Введите название папки в удалённом хранилище')
+        return False
+    return True
+        #exit()
+
+
+def check_token(cloud_dir: str, request_url: str, headers: Dict[str, str]) -> None:
+    """
+    Функция для проверки токена
+    """
+    result = requests.get(f'{request_url}?path={cloud_dir}', headers=headers)
+    if result.status_code != 200:
+        logger.error(f'Неверный токен')
+        return False
+    return True
+        #exit()
+
+
+def check_timeout(timeout) -> (int, float):
+    """
+    Функция для проверки периода
+    """
+    try:
+        sync_time = float(timeout)
+        return sync_time
+    except (ValueError, TypeError):
+        logger.error(f'SYNC_TIMEOUT должен быть числом')
+        exit()
+
+
+
+if not (check_cloud_dir('') or check_path('config.py')):
+    print('exit')

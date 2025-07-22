@@ -1,19 +1,18 @@
 """Модуль с классом для синхронизации"""
 
 import time
-from loguru import logger
 
-from config import REQUEST_URL, HEADERS, CLOUD_DIR, SELF_DIR, SYNC_TIMEOUT
+from config import REQUEST_URL, HEADERS, CLOUD_DIR, SELF_DIR, SYNC_TIMEOUT, logger
 from logic import get_self_folder_files, get_files_from_cloud, create_folder, upload_file_to_cloud, \
-    delete_file_from_cloud, select_files_to_upload, select_files_to_delete, check_path
-
-logger.add("log_info.log")
+    delete_file_from_cloud, select_files_to_upload, select_files_to_delete, check_path, check_cloud_dir, check_token, \
+    check_timeout
 
 
 class SyncYaCloud:
     """
     Класс с методами для синхронизации файлов локального пути с Яндекс диском
     """
+
     def __init__(
             self,
             url=REQUEST_URL,
@@ -23,7 +22,7 @@ class SyncYaCloud:
             sync_timeout=SYNC_TIMEOUT
     ):
         self.self_dir = self_dir
-        self.sync_timeout = sync_timeout
+        self.sync_timeout = check_timeout(sync_timeout)
         self.get_data = {
             'cloud_dir': cloud_dir,
             'request_url': url,
@@ -102,9 +101,12 @@ class SyncYaCloud:
         """
         Запуск приложения
         """
-        if not check_path(self.self_dir):
-            logger.debug(f'{self.self_dir} такого пути не существует. Проверьте правильность пути')
-            exit(404)
+        # if not check_path(self.self_dir):
+        #     logger.error(f'"{self.self_dir}" такого пути не существует. Проверьте правильность пути')
+        #     exit()
+        check_token(
+            **self.get_data
+        )
 
         logger.info('Starting synchronization')
         self.create_cloud_dir()
