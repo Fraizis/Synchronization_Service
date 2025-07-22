@@ -97,17 +97,22 @@ class SyncYaCloud:
         """
         delete_file_from_cloud(file, **self.get_data)
 
+    def check_config(self):
+        """
+        Проверка данных конфига
+        """
+        if (not check_cloud_dir(self.get_data['cloud_dir']) or
+                not check_path(self.self_dir) or not check_token(
+                    self.get_data['request_url'],
+                    self.get_data['headers']
+                )):
+            exit()
+
     def run_app(self):
         """
         Запуск приложения
         """
-        # if not check_path(self.self_dir):
-        #     logger.error(f'"{self.self_dir}" такого пути не существует. Проверьте правильность пути')
-        #     exit()
-        check_token(
-            **self.get_data
-        )
-
+        self.check_config()
         logger.info('Starting synchronization')
         self.create_cloud_dir()
         [self.upload_file(i) for i in self.get_files_to_upload()]

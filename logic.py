@@ -145,38 +145,38 @@ def select_files_to_delete(
     return files_to_delete
 
 
-def check_path(path: str) -> None:
+def check_path(path: str) -> bool:
     """
     Функция для проверки указанного пути
     """
     if not os.path.exists(path):
         logger.error(f'"{path}" такого пути не существует. Проверьте правильность пути')
         return False
+
     return True
-        #exit()
 
 
-def check_cloud_dir(dir: str) -> None:
+def check_cloud_dir(dir: str) -> bool:
     """
     Функция для проверки имени папки в удалённом хранилище
     """
     if not dir:
-        logger.error(f'Введите название папки в удалённом хранилище')
+        logger.error(f'Введите "CLOUD_DIR" название папки в удалённом хранилище')
         return False
+
     return True
-        #exit()
 
 
-def check_token(cloud_dir: str, request_url: str, headers: Dict[str, str]) -> None:
+def check_token(request_url: str, headers: Dict[str, str]) -> bool:
     """
     Функция для проверки токена
     """
-    result = requests.get(f'{request_url}?path={cloud_dir}', headers=headers)
+    result = requests.get(f'{request_url}/files', headers=headers)
     if result.status_code != 200:
         logger.error(f'Неверный токен')
         return False
+
     return True
-        #exit()
 
 
 def check_timeout(timeout) -> (int, float):
@@ -189,8 +189,3 @@ def check_timeout(timeout) -> (int, float):
     except (ValueError, TypeError):
         logger.error(f'SYNC_TIMEOUT должен быть числом')
         exit()
-
-
-
-if not (check_cloud_dir('') or check_path('config.py')):
-    print('exit')
